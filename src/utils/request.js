@@ -61,7 +61,8 @@ service.interceptors.request.use(
 // 拦截响应
 service.interceptors.response.use(
   // 响应成功进入第1个函数，该函数的参数是响应对象
-  response => {
+  response => { // NOTE 这个response是响应报文
+    console.log("http响应报文:",response)
     return response.data
   },
   // 响应失败进入第2个函数，该函数的参数是错误对象

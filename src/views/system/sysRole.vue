@@ -14,13 +14,17 @@
     <!-- 搜索表单 -->
     <el-form label-width="70px" size="small">
       <el-form-item label="角色名称">
-        <el-input style="width: 100%" placeholder="角色名称"></el-input>
+        <el-input
+          style="width: 100%"
+          placeholder="角色名称"
+          v-model="queryDto.roleName"
+        />
       </el-form-item>
       <el-row style="display:flex">
-        <el-button type="primary" size="small">
+        <el-button type="primary" size="small" @click="searchSysRole">
           搜索
         </el-button>
-        <el-button size="small">重置</el-button>
+        <el-button size="small" @click="resetData">重置</el-button>
       </el-row>
     </el-form>
 
@@ -45,26 +49,58 @@
     </el-table>
 
     <!--分页条-->
-    <el-pagination :page-sizes="[10, 20, 50, 100]" layout="total, sizes, prev, pager, next" :total="total" />
+    <el-pagination
+      :page-sizes="[10, 20, 50, 100]"
+      layout="total, sizes, prev, pager, next"
+      :total="total"
+    />
   </div>
-
 </template>
 
-
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue'
+import { GetSysRoleListByPage } from '@/api/system'
+
+onMounted(() => {
+  // 加载初始化list数据
+  fetchData()
+})
 
 // 分页条总记录数
 let total = ref(0)
 
 // 定义表格数据模型
-let list = ref([
-  { "id": 9, "roleName": "系统管理员", "roleCode": "xtgly", "createTime": '2023-05-09' },
-  { "id": 10, "roleName": "商品管理员", "roleCode": "spgly", "createTime": '2023-05-09' }
-])
+let list = ref([])
 
+// 表单参数
+const queryDto = ref({
+  roleName: '', // FIXME 这个前面的key到底用不用加 "" 符号啊？
+})
+
+// 分页参数
+const pageParams = ref({
+  page: 1,
+  limit: 10,
+})
+
+// 搜索按钮点击事件处理函数
+const searchSysRole = () => {
+  fetchData()
+}
+
+// 查询
+function fetchData() {
+  console.log("打印queryDto")
+  console.log(queryDto.value.roleName)
+  // alert("查询数据表格")
+  GetSysRoleListByPage(queryDto.value, pageParams.value.page, pageParams.value.limit)
+    .then(response => { // FIXME 这个response 应该就是这个函数返回的结果，命名为response
+      list.value = response.data.list
+      total.value = response.data.total
+  })
+  // TODO 这个then是什么用法？课件中用的await，asite？是什么用法？
+}
 </script>
-
 
 <style scoped>
 .search-div {
