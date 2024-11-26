@@ -46,7 +46,7 @@
         <el-button type="primary" size="small" @click="editShow(scope.row)">
           修改
         </el-button>
-        <el-button type="danger" size="small">
+        <el-button type="danger" size="small" @click="deleteById(scope.row)">
           删除
         </el-button>
       </el-table-column>
@@ -82,8 +82,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { GetSysRoleListByPage, UpdateSysRole, AddSysRole } from '@/api/system/sysRole'
-import { ElMessage } from "element-plus";
+import {
+  GetSysRoleListByPage,
+  UpdateSysRole,
+  AddSysRole,
+  DeleteSysRoleById,
+} from '@/api/system/sysRole'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 onMounted(() => {
   // 加载初始化list数据
@@ -154,10 +159,12 @@ function editShow(row) {
 }
 
 // 添加或修改
-const submit = async () => { // NOTE 这里是 async用法
+const submit = async () => {
+  // NOTE 这里是 async用法
 
   let code = 0
-  if (sysRole.value.id) { // FIXME 为啥没有 sysRole.value.id 就是添加啊？
+  if (sysRole.value.id) {
+    // FIXME 为啥没有 sysRole.value.id 就是添加啊？
     // 修改
     let response = await UpdateSysRole(sysRole.value)
     code = response.code
@@ -175,6 +182,48 @@ const submit = async () => { // NOTE 这里是 async用法
   }
 }
 
+// 删除
+const deleteById = row => {
+  // then实现
+  ElMessageBox.confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+    .then(() => {
+      DeleteSysRoleById(row.id).then(response => {
+        if (response.code === 200) {
+          ElMessage.success('删除成功')
+          fetchData()
+        } else {
+          ElMessage.error('删除失败')
+        }
+      })
+    })
+    .catch(() => {
+      ElMessage.info('取消删除')
+    })
+
+  // NOTE 这里是await用法
+  // ElMessageBox.confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+  //   confirmButtonText: '确定',
+  //   cancelButtonText: '取消',
+  //   type: 'warning',
+  // })
+  //   .then(async () => {
+  //     let response = await DeleteSysRoleById(row.id)
+  //     if (response.code === 200) {
+  //       ElMessage.success('删除成功')
+  //       fetchData()
+  //     } else {
+  //       ElMessage.error('删除失败')
+  //     }
+  //   })
+  //   .catch(() => {
+  //     ElMessage.info('取消删除')
+  //   })
+
+}
 </script>
 
 <style scoped>

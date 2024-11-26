@@ -25,3 +25,10 @@ export const AddSysRole = (sysRole) => {
     data: sysRole,
   })
 }
+
+export const DeleteSysRoleById = (id) => {
+  return request({
+    url: `/admin/system/sysRole/deleteSysRoleById/${id}`,
+    method: 'delete',
+  })
+}
