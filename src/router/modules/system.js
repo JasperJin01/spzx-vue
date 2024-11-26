@@ -9,7 +9,7 @@
  * @Github: https://github.com/huzhushan/vue3-element-admin
  * @Donate: https://huzhushan.gitee.io/vue3-element-admin/donate/
  */
-// system.js
+// sysRole.js
 
 const Layout = () => import('@/layout/index.vue')
 const sysUser = () => import('@/views/system/sysUser.vue')

@@ -39,6 +39,7 @@
     <el-table :data="list" style="width: 100%">
       <el-table-column prop="roleName" label="角色名称" width="180" />
       <el-table-column prop="roleCode" label="角色code" width="180" />
+      <el-table-column prop="description" label="描述" />
       <el-table-column prop="createTime" label="创建时间" />
       <el-table-column label="操作" align="center" width="280" #default="scope">
         <!-- TODO 作用域? 啥是作用域啊？-->
@@ -67,6 +68,9 @@
         <el-form-item label="角色Code">
           <el-input v-model="sysRole.roleCode" />
         </el-form-item>
+        <el-form-item label="描述">
+          <el-input v-model="sysRole.description" />
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="submit">提交</el-button>
           <el-button @click="dialogVisible = false">取消</el-button>
@@ -78,7 +82,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { GetSysRoleListByPage } from '@/api/system'
+import { GetSysRoleListByPage, UpdateSysRole, AddSysRole } from '@/api/system/sysRole'
+import { ElMessage } from "element-plus";
 
 onMounted(() => {
   // 加载初始化list数据
@@ -114,6 +119,7 @@ const dialogVisible = ref(false)
 const sysRole = ref({
   roleName: '',
   roleCode: '',
+  description: '',
 })
 
 // 查询
@@ -130,7 +136,7 @@ function fetchData() {
     list.value = response.data.list
     total.value = response.data.total
   })
-  // TODO 这个then是什么用法？课件中用的await，asite？是什么用法？
+  // NOTE 这个then是什么用法？课件中用的 async 是什么用法？
 }
 
 // 打开对话框
@@ -143,9 +149,32 @@ function addShow() {
 function editShow(row) {
   console.log('打印row')
   console.log(row)
-  sysRole.value = { ...row } // TODO 这里必须使用解构赋值，直接 sysRole.value = row 是指针
+  sysRole.value = { ...row } // NOTE 这里必须使用解构赋值，直接 sysRole.value = row 是指针
   dialogVisible.value = true
 }
+
+// 添加或修改
+const submit = async () => { // NOTE 这里是 async用法
+
+  let code = 0
+  if (sysRole.value.id) { // FIXME 为啥没有 sysRole.value.id 就是添加啊？
+    // 修改
+    let response = await UpdateSysRole(sysRole.value)
+    code = response.code
+  } else {
+    // 添加
+    let response = await AddSysRole(sysRole.value)
+    code = response.code
+  }
+  if (code === 200) {
+    ElMessage.success('操作成功')
+    dialogVisible.value = false
+    fetchData()
+  } else {
+    ElMessage.error('操作失败')
+  }
+}
+
 </script>
 
 <style scoped>
