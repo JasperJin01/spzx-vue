@@ -120,7 +120,7 @@ const searchSysRole = () => {
 // 对话框
 const dialogVisible = ref(false)
 
-// 添加或修改表单数据模型
+// 表单对象
 const sysRole = ref({
   roleName: '',
   roleCode: '',
