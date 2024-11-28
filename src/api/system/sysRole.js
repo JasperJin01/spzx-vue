@@ -32,3 +32,10 @@ export const DeleteSysRoleById = (id) => {
     method: 'delete',
   })
 }
+
+export const GetAllRoleList = (userId) => {
+  return request({
+    url: `/admin/system/sysRole/getAllRoleList/${userId}`,
+    method: 'get',
+  })
+}

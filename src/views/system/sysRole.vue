@@ -163,22 +163,25 @@ const submit = async () => {
   // NOTE 这里是 async用法
 
   let code = 0
+  let message = ''
   if (sysRole.value.id) {
     // FIXME 为啥没有 sysRole.value.id 就是添加啊？
     // 修改
     let response = await UpdateSysRole(sysRole.value)
     code = response.code
+    message = response.message
   } else {
     // 添加
     let response = await AddSysRole(sysRole.value)
     code = response.code
+    message = response.message
   }
   if (code === 200) {
     ElMessage.success('操作成功')
     dialogVisible.value = false
     fetchData()
   } else {
-    ElMessage.error('操作失败')
+    ElMessage.error(message)
   }
 }
 
@@ -196,7 +199,7 @@ const deleteById = row => {
           ElMessage.success('删除成功')
           fetchData()
         } else {
-          ElMessage.error('删除失败')
+          ElMessage.error(response.message)
         }
       })
     })

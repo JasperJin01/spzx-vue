@@ -73,7 +73,7 @@
       <el-button type="danger" size="small" @click="deleteSysUser">
         删除
       </el-button>
-      <el-button type="warning" size="small" @click="assignRole">
+      <el-button type="warning" size="small" @click="assignRoleShow(scope.row)">
         分配角色
       </el-button>
     </el-table-column>
@@ -85,6 +85,7 @@
     :total="total"
   />
 
+  <!--  修改用户信息-->
   <el-dialog v-model="dialogVisible" title="添加或修改" width="40%">
     <el-form label-width="120px">
       <el-form-item label="用户名">
@@ -121,6 +122,7 @@
     </el-form>
   </el-dialog>
 
+  <!--分配角色-->
   <el-dialog v-model="dialogRoleVisible" title="分配角色" width="40%">
     <el-form label-width="80px">
       <el-form-item label="用户名">
@@ -140,7 +142,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary">提交</el-button>
+        <el-button type="primary" @click="submitRole">提交</el-button>
         <el-button @click="dialogRoleVisible = false">取消</el-button>
       </el-form-item>
     </el-form>
@@ -150,8 +152,19 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { GetSysUserListByPage, UpdateSysUser, DeleteSysUserById, AddSysUser } from '@/api/system/sysUser'
+import { GetSysUserListByPage, UpdateSysUser, DeleteSysUserById, AddSysUser, DoAssignRoleToUser} from '@/api/system/sysUser'
+import { GetAllRoleList } from '@/api/system/sysRole'
 import { ElMessage } from "element-plus";
+import { useApp } from '@/pinia/modules/app'
+
+const headers = {
+  token: useApp().authorization.token,
+}
+
+// 头像图片回显
+function handleAvatarSuccess (response) {
+  sysUser.value.avatar = response.data
+}
 
 // 表格数据模型
 const list = ref([])
@@ -184,6 +197,10 @@ const sysUser = ref({
   avatar: '',
   description: '',
 })
+
+// 角色列表和用户角色id
+const userRoleIds = ref([])
+const allRoles = ref([])
 
 onMounted(() => {
   // 加载初始化list数据
@@ -235,8 +252,14 @@ const deleteSysUser = () => {
   console.log('deleteSysUser')
 }
 
-const assignRole = () => {
+const assignRoleShow = (row) => {
   dialogRoleVisible.value = true
+  sysUser.value = {...row}
+  GetAllRoleList(row.id).then(res => {
+    allRoles.value = res.data.allRoles
+    userRoleIds.value = res.data.userRoleIds
+  })
+
 }
 
 // 添加或修改
@@ -259,6 +282,23 @@ async function submit () {
   }
 }
 
+function submitRole () {
+  let assignRoleDto = {
+    userId: sysUser.value.id,
+    roleIds: userRoleIds.value
+  }
+
+  DoAssignRoleToUser(assignRoleDto).then(res => {
+    if (res.code === 200) {
+      ElMessage.success('操作成功')
+      dialogRoleVisible.value = false
+      // fetchData()
+    } else {
+      ElMessage.error('操作失败')
+    }
+  })
+
+}
 
 </script>
 
