@@ -37,9 +37,10 @@ import test from './modules/test'
 
 /* 菜单栏的路由 */
 // 固定菜单
-export const fixedRoutes = [...home, ...system]
+// 这里的 ...system 要删掉！
+export const fixedRoutes = [...home]
 // 动态菜单
-export const asyncRoutes = [...test]
+export const asyncRoutes = [...test, ...system]
 // 定义了两种路由数组，
 // fixedRoutes 代表固定不变的路由（如主页），
 // asyncRoutes 代表可能根据用户权限或其他条件动态加载的路由（如特定功能测试页面）。
