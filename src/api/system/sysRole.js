@@ -39,3 +39,19 @@ export const GetAllRoleList = (userId) => {
     method: 'get',
   })
 }
+
+// 根据角色id，返回菜单树 和 角色拥有的菜单ids
+export const GetSysMenuTreeIds = (roleId) => {
+  return request({
+    url: `/admin/system/sysRole/getSysMenuTreeIds/${roleId}`,
+    method: 'get',
+  })
+}
+
+export const AssignRoleMenu = (assignMenuDto) => {
+  return request({
+    url: `/admin/system/sysRoleMenu/assignMenuToRole`,
+    method: 'post',
+    data: assignMenuDto,
+  })
+}

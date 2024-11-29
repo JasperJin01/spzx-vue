@@ -49,6 +49,9 @@
         <el-button type="danger" size="small" @click="deleteById(scope.row)">
           删除
         </el-button>
+        <el-button type="warning" size="small" @click="assignMenuShow(scope.row)">
+          分配菜单
+        </el-button>
       </el-table-column>
     </el-table>
 
@@ -78,6 +81,26 @@
       </el-form>
     </el-dialog>
   </div>
+
+  <!-- 分配菜单的对话框  -->
+  <el-dialog v-model="dialogMenuVisible" title="分配菜单" width="40%">
+    <el-form label-width="80px">
+      <el-tree
+        :data="sysMenuTreeList"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        :props="defaultProps"
+        :check-on-click-node="true"
+        ref="tree"
+      />
+      <el-form-item>
+        <el-button type="primary" @click="doAssignRoleMenu">提交</el-button>
+        <el-button @click="dialogMenuVisible = false">取消</el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
+
 </template>
 
 <script setup>
@@ -87,6 +110,8 @@ import {
   UpdateSysRole,
   AddSysRole,
   DeleteSysRoleById,
+  GetSysMenuTreeIds,
+  AssignRoleMenu
 } from '@/api/system/sysRole'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -119,6 +144,8 @@ const searchSysRole = () => {
 
 // 对话框
 const dialogVisible = ref(false)
+
+
 
 // 表单对象
 const sysRole = ref({
@@ -227,6 +254,83 @@ const deleteById = row => {
   //   })
 
 }
+
+
+// 分配菜单对话框
+const dialogMenuVisible = ref(false)
+
+const sysMenuTreeList = ref([])
+
+const tree = ref([])
+// TODO 这个roleId好像可以去掉
+const roleId = ref(0)
+// 菜单树显示的内容
+const defaultProps = {
+  children: 'children',
+  label: 'title',
+}
+
+// 显示分配菜单
+function assignMenuShow(row) {
+  roleId.value = row.id
+
+  // 加载菜单树
+  GetSysMenuTreeIds(row.id).then(response => {
+    sysMenuTreeList.value = response.data.sysMenuList
+    // 勾选的数据回显
+    tree.value.setCheckedKeys(response.data.roleMenuIds)
+  })
+
+
+  dialogMenuVisible.value = true
+}
+
+function doAssignRoleMenu () {
+  // 全选菜单ids节点
+  let checkedNodes = tree.value.getCheckedNodes()
+  // 半选菜单ids节点
+  let halfCheckedNodes = tree.value.getHalfCheckedNodes()
+
+  // 全选菜单ids
+  let checkedIds = checkedNodes.map((node) => {
+    return {
+      id: node.id,
+      isHalf: 0
+    }
+  })
+
+  // 半选菜单ids
+  let halfCheckedIds = halfCheckedNodes.map((node) => {
+    return {
+      id: node.id,
+      isHalf: 1
+    }
+  })
+
+  // 合并全选和半选菜单ids
+  let ids = [...checkedIds, ...halfCheckedIds]
+
+  // 提交参数
+  let assignMenuDto = {
+    roleId: roleId.value,
+    menuIdList: ids
+  }
+
+  console.log(assignMenuDto)
+
+  AssignRoleMenu(assignMenuDto).then(response => {
+    if (response.code === 200) {
+      ElMessage.success('分配成功')
+      dialogMenuVisible.value = false
+    } else {
+      ElMessage.error(response.message)
+    }
+  })
+
+
+
+}
+
 </script>
 
 <style scoped>
