@@ -1,0 +1,4 @@
+<template>
+product
+
+</template>

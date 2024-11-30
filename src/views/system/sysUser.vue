@@ -53,8 +53,8 @@
 
   <!---数据表格-->
   <el-table :data="list" style="width: 100%">
-    <el-table-column prop="username" label="用户名" />
-    <el-table-column prop="name" label="姓名" />
+    <el-table-column prop="username" label="账号" />
+    <el-table-column prop="name" label="用户昵称" />
     <el-table-column prop="phone" label="手机" />
     <el-table-column prop="avatar" label="头像" #default="scope">
       <img :src="scope.row.avatar" width="50" />
@@ -88,13 +88,13 @@
   <!--  修改用户信息-->
   <el-dialog v-model="dialogVisible" title="添加或修改" width="40%">
     <el-form label-width="120px">
-      <el-form-item label="用户名">
+      <el-form-item label="账号">
         <el-input v-model="sysUser.username" />
       </el-form-item>
       <el-form-item label="密码">
         <el-input type="password" show-password v-model="sysUser.password" />
       </el-form-item>
-      <el-form-item label="姓名">
+      <el-form-item label="用户昵称">
         <el-input v-model="sysUser.name" />
       </el-form-item>
       <el-form-item label="手机">
@@ -125,7 +125,7 @@
   <!--分配角色-->
   <el-dialog v-model="dialogRoleVisible" title="分配角色" width="40%">
     <el-form label-width="80px">
-      <el-form-item label="用户名">
+      <el-form-item label="账号（用户名）">
         <el-input disabled :value="sysUser.username"></el-input>
       </el-form-item>
 
