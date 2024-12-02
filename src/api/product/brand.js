@@ -27,3 +27,11 @@ export const UpdateBrandById = brand => {
     data: brand,
   })
 }
+
+// 查询所有的品牌数据
+export const FindAllBrand = () => {
+  return request({
+    url: `${prefix}/findAll`,
+    method: 'get',
+  })
+}
