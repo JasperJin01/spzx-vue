@@ -17,3 +17,10 @@ export const ExportCategoryData = () => {
     responseType: 'blob'
   })
 }
+
+export const FindCategoryByParentId = (parentId) => {
+  return request({
+    url: `/admin/product/category/findByParentId/${parentId}`,
+    method: 'get'
+  })
+}
